@@ -1,6 +1,6 @@
-# 校园零售销售系统 - 详细操作步骤
+# 校园零售销售系统
 
-## 一、项目说明
+## 一、项目说明（半成品，首页图片功能未完善）
 
 - **技术栈**：Spring Boot 3.2 + MyBatis-Plus + MySQL 8.0 + Thymeleaf（网页前端）
 - **分层架构**：Controller（控制层）→ Service（业务层）→ Mapper（数据访问层）→ Entity（实体层）
@@ -15,59 +15,17 @@
   - ✅ 首页：显示**部分热门商品**
   - ✅ 管理员后台：只有**商品管理**和**订单管理**，无"我的订单"功能
   - ✅ 登录页面：**轮播学校风景图片**（3张图片自动切换）
-  - ✅ 首页：**横幅图片**（单张图片完整显示），界面美观
+  - ✅ 首页：**横幅图片**
   - ✅ 动态分类功能：添加商品时输入新分类，会自动在商品选购界面显示该分类
-
----
 
 ## 二、环境准备
 
-### 1. 安装 JDK 17
 
-- 下载：https://adoptium.net/ 或 Oracle JDK 17
-- 配置 `JAVA_HOME`，并把 `%JAVA_HOME%\bin` 加入 Path
-- 命令行执行 `java -version` 能显示 17 即为成功
-
-### 2. 安装 Maven（如用命令行构建）
-
-- 下载：https://maven.apache.org/
-- 配置 `MAVEN_HOME` 和 Path
-- 执行 `mvn -v` 能显示版本即可
-
-> 若使用 **IntelliJ IDEA**，可只用其自带的 Maven，不必单独安装。
-
-### 3. 安装并启动 MySQL 8.0
-
-- 下载：https://dev.mysql.com/downloads/mysql/
-- 安装后启动 MySQL 服务
-- 记住你设置的 **root 密码**（安装时或之后修改的）
-
----
-
-## 三、准备图片资源（重要）
-
-在启动项目前，需要准备图片用于登录页和首页的显示。
-
-### 步骤 1：准备图片文件
-
-**登录页面轮播图**（需要3张）：
-- 建议尺寸：1920x1080 或类似比例，格式：JPG 或 PNG
-- 用于登录页面左侧轮播显示
-
-**首页横幅图**（需要1张）：
-- 建议尺寸：宽度 1920px，高度 150px（或按比例）
-
-### 步骤 2：放置图片到指定目录
-
-**登录页面图片**：
-将3张图片文件重命名为：
-- `login1.jpg`
-- `login2.jpg`
-- `login3.jpg`
+## 三、图片资源（已添加可更换）
 
 **首页图片**：
 将1张图片文件重命名为：
-- `home1.jpg`（
+- `home1.jpg`
 
 然后复制到项目目录：
 ```
@@ -75,14 +33,12 @@
 ```
 
 **操作步骤**：
-1. 在项目根目录下找到 `src/main/resources/static/` 目录
-2. 如果 `img` 目录不存在，请先创建该目录
-3. 将登录页面的3张图片复制到 `img` 目录，重命名为：`login1.jpg`、`login2.jpg`、`login3.jpg`
-4. 将首页的1张图片复制到 `img` 目录，重命名为：`home1.jpg`
+在项目根目录下找到 `src/main/resources/static/` 目录
+将登录页面的3张图片复制到 `img` 目录，重命名为：`login1.jpg`、`login2.jpg`、`login3.jpg`
+将首页的1张图片复制到 `img` 目录，重命名为：`home1.jpg`
 
 > **注意**：如果使用 PNG 格式，文件名应为 `login1.png`、`home1.png` 等，并确保 HTML 中的路径也使用 `.png` 扩展名。
 
----
 
 ## 四、创建数据库并导入数据
 
@@ -93,39 +49,12 @@
 
 ### 步骤 2：创建数据库
 
-在 MySQL 客户端中执行：
-
-```sql
-CREATE DATABASE campus_retail DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
 
 ### 步骤 3：执行初始化脚本
 
 > **重要**：若之前已建过库，表结构有变更，请重新执行本脚本（会先 DROP 再 CREATE 表，数据会重置）。
 
-**方式 A：在 MySQL 命令行中执行**
-
-```sql
-USE campus_retail;
-SOURCE 项目根目录/sql/init.sql;
-```
-
-> **注意**：
-> - `SOURCE` 后的路径要把反斜杠 `\` 改为正斜杠 `/`
-> - 路径必须是你的实际项目路径，例如：`SOURCE D:/projects/campus-retail-system/sql/init.sql;`
-
-**方式 B：在 CMD 或 PowerShell 中执行**
-
-```powershell
-cd 项目根目录
-mysql -u root -p campus_retail < sql/init.sql
-```
-
-> **注意**：将 `项目根目录` 替换为你的实际项目路径，例如：`cd D:\projects\campus-retail-system`
-
-输入 MySQL 的 root 密码后，脚本会自动建表并插入测试数据。
-
-**方式 C：在图形化工具中执行**
+**在图形化工具中执行**
 
 1. 打开 Navicat 或 MySQL Workbench
 2. 连接到 MySQL 服务器
@@ -148,11 +77,6 @@ SELECT * FROM user;
 -- 学号 2021001（普通用户，密码123456，宿舍号：1栋301）
 -- 学号 2021002（普通用户，密码123456，宿舍号：2栋205）
 
-SELECT * FROM product;
--- 应看到5条示例商品数据
-```
-
----
 
 ## 五、修改项目配置（连接你的 MySQL）
 
@@ -225,18 +149,6 @@ http://localhost:8080
 
 会跳转到登录页；若 8080 被占用，可在 `application.properties` 中修改 `server.port=8081` 等再重启。
 
----
-
-## 六、用命令行运行（可选）
-
-在项目根目录下执行：
-
-```bash
-# 若已配置 Maven 环境变量：
-mvn spring-boot:run
-```
-
-或用 IDEA 自带 Maven 的 `mvn` 所在目录执行上述命令。看到启动成功提示后，同样访问：`http://localhost:8080`。
 
 ---
 
@@ -265,90 +177,6 @@ mvn spring-boot:run
   - **分类功能**：添加商品时可输入分类名称，如果输入新分类，该分类会自动出现在商品选购界面的分类列表中
 - **订单管理**：查看全部订单及收货信息（姓名、宿舍号、联系电话）
 
----
-
-## 九、项目结构说明（分层架构）
-
-### 项目目录结构
-
-```
-campus-retail-system/
-├── pom.xml                          # Maven 依赖与构建配置
-├── sql/
-│   └── init.sql                     # 数据库初始化脚本（建表+测试数据）
-├── uploads/                          # 上传的商品图片存储目录（自动创建）
-│   └── product/                      # 商品图片文件夹
-├── src/main/
-│   ├── java/com/campus/retail/
-│   │   ├── CampusRetailApplication.java   # Spring Boot 启动类
-│   │   ├── config/
-│   │   │   └── WebConfig.java             # 静态资源配置（图片访问路径）
-│   │   ├── controller/                    # 控制层（接收请求，返回视图）
-│   │   │   ├── PageController.java       # 首页、登录页、登出
-│   │   │   ├── UserController.java       # 用户登录、注册
-│   │   │   ├── ProductController.java    # 商品列表（顾客）、商品管理+图片上传（管理员）
-│   │   │   ├── CartController.java       # 购物车：加入、查看、更新、删除
-│   │   │   └── OrderController.java      # 下单（从购物车+收货信息）、订单查询、订单管理
-│   │   ├── service/                      # 业务逻辑层（处理业务逻辑）
-│   │   │   ├── UserService.java          # 用户相关业务
-│   │   │   ├── ProductService.java       # 商品相关业务（包括热门商品查询）
-│   │   │   └── OrderService.java         # 订单相关业务
-│   │   ├── mapper/                       # 数据访问层（Mapper接口，MyBatis-Plus）
-│   │   │   ├── UserMapper.java           # 用户表操作
-│   │   │   ├── ProductMapper.java        # 商品表操作
-│   │   │   ├── OrdersMapper.java         # 订单表操作
-│   │   │   └── OrderItemMapper.java      # 订单明细表操作
-│   │   └── entity/                       # 实体层（对应数据库表）
-│   │       ├── User.java                 # 用户实体（学号、密码、宿舍号等）
-│   │       ├── Product.java              # 商品实体（名称、价格、库存、图片等）
-│   │       ├── Orders.java               # 订单实体（订单号、收货信息等）
-│   │       └── OrderItem.java            # 订单明细实体
-│   └── resources/
-│       ├── application.properties        # 配置文件（数据库、端口、MyBatis等）
-│       ├── static/                       # 静态资源（CSS、JS、图片）
-│       │   └── img/                       # 图片资源目录
-│       │       ├── login1.jpg            # 登录页轮播图片1（需自行添加）
-│       │       ├── login2.jpg            # 登录页轮播图片2（需自行添加）
-│       │       ├── login3.jpg            # 登录页轮播图片3（需自行添加）
-│       │       ├── home1.jpg             # 首页横幅图片（需自行添加）
-│       │       └── placeholder.svg       # 商品占位图
-│       └── templates/                    # 前端网页模板（Thymeleaf）
-│           ├── login.html                # 登录页面（带轮播图）
-│           ├── register.html             # 注册页面（学号、密码、宿舍号）
-│           ├── index.html                # 首页（热门商品、横幅图）
-│           ├── product/
-│           │   ├── list.html             # 商品选购页面（两列平铺、加入购物车）
-│           │   ├── manage.html           # 商品管理页面（管理员）
-│           │   └── edit.html             # 新增/编辑商品页面（含图片上传）
-│           ├── cart/
-│           │   └── view.html             # 购物车页面
-│           └── order/
-│               ├── confirm.html           # 确认订单页面（填写收货信息）
-│               ├── my.html               # 我的订单页面（普通用户）
-│               ├── detail.html           # 订单详情页面
-│               └── manage.html           # 订单管理页面（管理员）
-└── 操作步骤.md                           # 本操作文档
-```
-
-### 分层架构说明
-
-1. **Controller 层（控制层）**
-   - 职责：接收 HTTP 请求，调用 Service 层处理业务，返回视图或数据
-   - 位置：`controller/` 包
-
-2. **Service 层（业务逻辑层）**
-   - 职责：处理业务逻辑，调用 Mapper 层操作数据库
-   - 位置：`service/` 包
-
-3. **Mapper 层（数据访问层）**
-   - 职责：使用 MyBatis-Plus 进行数据库 CRUD 操作
-   - 位置：`mapper/` 包
-
-4. **Entity 层（实体层）**
-   - 职责：对应数据库表结构，使用 Lombok 简化代码
-   - 位置：`entity/` 包
-
----
 
 ## 十、常见问题及解决方案
 
@@ -378,7 +206,7 @@ campus-retail-system/
 
 - 可配置国内镜像，例如在 Maven 的 `settings.xml` 的 `<mirrors>` 中加入阿里云镜像（可自行搜索 “Maven 阿里云镜像” 配置）
 
----
+
 
 ## 十一、快速开始检查清单
 
@@ -397,14 +225,8 @@ campus-retail-system/
 
 ---
 
-## 十二、实训报告可写内容建议
 
-### 1. 项目概述
-- 项目名称：校园零食销售系统
-- 项目背景：校园零售场景、用户需求分析
-- 项目目标：实现商品选购、购物车、订单管理等核心功能
-
-### 2. 需求分析
+### 需求分析
 - **用户角色**：
   - 普通用户（学生）：浏览商品、加入购物车、下单、查看订单
   - 管理员：商品管理、订单管理
@@ -418,7 +240,7 @@ campus-retail-system/
   - 商品管理（管理员：增删改、图片上传）
   - 订单管理（管理员：查看所有订单）
 
-### 3. 技术选型
+### 技术选型
 - **后端框架**：Spring Boot 3.2（简化配置、快速开发）
 - **持久层框架**：MyBatis-Plus（简化 CRUD 操作）
 - **数据库**：MySQL 8.0（关系型数据库，稳定可靠）
@@ -426,7 +248,7 @@ campus-retail-system/
 - **构建工具**：Maven（依赖管理、项目构建）
 - **开发工具**：IntelliJ IDEA
 
-### 4. 系统设计
+###  系统设计
 
 #### 4.1 分层架构设计
 - **Controller 层**：接收请求，调用 Service，返回视图
@@ -471,7 +293,5 @@ campus-retail-system/
 - 管理员可上传/更换商品图片
 - 首页显示热门商品
 - 动态分类功能：添加商品时输入新分类，会自动在商品选购界面显示
-
----
 
 按上述步骤完成环境准备、建库、改配置、启动后，即可在浏览器中使用本系统。
