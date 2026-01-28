@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的订单 - 校园零售销售系统</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Microsoft YaHei", sans-serif; background: #f5f5f5; }
+        .head { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; padding: 12px 24px; }
+        .head a { color: #fff; text-decoration: none; margin-right: 16px; }
+        .main { max-width: 800px; margin: 24px auto; padding: 0 20px; }
+        .msg { color: #0a0; margin-bottom: 12px; }
+        table { width: 100%; background: #fff; border-radius: 8px; border-collapse: collapse; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; }
+        .status { padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+        .status-PENDING { background: #fff3cd; color: #856404; }
+        .status-PAID { background: #d4edda; color: #155724; }
+        .status-CANCELLED { background: #f8d7da; color: #721c24; }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="head">
+        <a href="/">首页</a>
+        <a href="/product/list">商品选购</a>
+        <a href="/cart">购物车</a>
+        <a href="/order/my">我的订单</a>
+        <a href="/logout">退出</a>
+    </div>
+    <div class="main">
+        <p class="msg" th:if="${msg}" th:text="${msg}"></p>
+        <table>
+            <tr>
+                <th>订单号</th>
+                <th>总金额</th>
+                <th>状态</th>
+                <th>下单时间</th>
+                <th>操作</th>
+            </tr>
+            <tr th:each="o : ${orders}">
+                <td th:text="${o.orderNo}">-</td>
+                <td th:text="'¥' + ${o.totalAmount}">0</td>
+                <td>
+                    <span th:class="'status status-' + ${o.status}" th:text="${o.status == 'PENDING' ? '待支付' : (o.status == 'PAID' ? '已支付' : '已取消')}">-</span>
+                </td>
+                <td th:text="${#temporals.format(o.createTime, 'yyyy-MM-dd HH:mm')}">-</td>
+                <td>
+                    <a th:href="${'/order/detail/' + o.id}">查看</a>
+                    <th:block th:if="${o.status == 'PENDING'}">
+                        <a th:href="${'/order/pay/' + o.id}" style="margin-left:8px">支付</a>
+                        <a th:href="${'/order/cancel/' + o.id}" style="margin-left:8px;color:#c00">取消</a>
+                    </th:block>
+                </td>
+            </tr>
+        </table>
+        <p th:if="${#lists.isEmpty(orders)}" style="text-align:center;color:#888;padding:40px">暂无订单，<a href="/product/list">去选购</a>或从<a href="/cart">购物车</a>下单</p>
+    </div>
+</body>
+</html>

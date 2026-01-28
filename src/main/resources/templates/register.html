@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 校园零售销售系统</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Microsoft YaHei", sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .box { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); width: 420px; }
+        h1 { text-align: center; color: #333; margin-bottom: 24px; font-size: 22px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; color: #555; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; }
+        input:focus, select:focus { outline: none; border-color: #667eea; }
+        .dormitory-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .dormitory-group select, .dormitory-group input { width: 100%; }
+        .hint { font-size: 12px; color: #999; margin-top: 4px; }
+        .btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+        .btn:hover { opacity: 0.9; }
+        .msg { color: #c00; font-size: 13px; margin-top: 10px; text-align: center; }
+        .link { text-align: center; margin-top: 12px; }
+        .link a { color: #667eea; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>用户注册</h1>
+        <form action="/register" method="post">
+            <div class="form-group">
+                <label>学号 *</label>
+                <input type="text" name="studentId" placeholder="请输入12位学号" maxlength="12" pattern="[0-9]{12}" required>
+                <div class="hint">学号必须为12位数字</div>
+            </div>
+            <div class="form-group">
+                <label>设置密码 *</label>
+                <input type="password" name="password" placeholder="至少6位" required>
+            </div>
+            <div class="form-group">
+                <label>确认密码</label>
+                <input type="password" name="confirmPassword" placeholder="再次输入密码">
+            </div>
+            <div class="form-group">
+                <label>宿舍信息 *</label>
+                <div class="dormitory-group">
+                    <select name="dormitoryArea" required>
+                        <option value="">选择区域</option>
+                        <option value="南一区">南一区</option>
+                        <option value="南二区">南二区</option>
+                        <option value="南三区">南三区</option>
+                        <option value="南四区">南四区</option>
+                        <option value="中区">中区</option>
+                    </select>
+                    <select name="dormitoryBuilding" required>
+                        <option value="">选择栋</option>
+                        <option value="A">A栋</option>
+                        <option value="B">B栋</option>
+                        <option value="C">C栋</option>
+                    </select>
+                    <input type="text" name="dormitoryNumber" placeholder="宿舍号" pattern="[0-9]+" required>
+                </div>
+                <div class="hint">例如：南一区 A栋 301</div>
+            </div>
+            <button type="submit" class="btn">注 册</button>
+        </form>
+        <p class="msg" th:if="${msg}" th:text="${msg}"></p>
+        <p class="link">已有账号？<a href="/login">去登录</a></p>
+    </div>
+    <script>
+        // 学号输入限制：只能输入数字，最多12位
+        document.querySelector('input[name="studentId"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').slice(0, 12);
+        });
+        
+        // 宿舍号输入限制：只能输入数字
+        document.querySelector('input[name="dormitoryNumber"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+        
+        // 表单提交前验证
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const studentId = document.querySelector('input[name="studentId"]').value;
+            if (studentId.length !== 12) {
+                e.preventDefault();
+                alert('学号必须为12位数字');
+                return false;
+            }
+            
+            const dormitoryArea = document.querySelector('select[name="dormitoryArea"]').value;
+            const dormitoryBuilding = document.querySelector('select[name="dormitoryBuilding"]').value;
+            const dormitoryNumber = document.querySelector('input[name="dormitoryNumber"]').value;
+            
+            if (!dormitoryArea || !dormitoryBuilding || !dormitoryNumber) {
+                e.preventDefault();
+                alert('请完整填写宿舍信息');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

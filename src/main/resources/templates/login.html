@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 校园零售销售系统</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Microsoft YaHei", sans-serif; overflow: hidden; }
+        .container { display: flex; height: 100vh; }
+        .carousel { flex: 1; position: relative; overflow: hidden; }
+        .carousel-item { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 1s; }
+        .carousel-item.active { opacity: 1; }
+        .carousel-item img { width: 100%; height: 100%; object-fit: cover; }
+        .login-box { width: 400px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 40px; display: flex; flex-direction: column; justify-content: center; box-shadow: -2px 0 20px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; margin-bottom: 8px; font-size: 24px; font-weight: 600; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 32px; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #555; font-size: 14px; font-weight: 500; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 14px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; transition: border-color 0.3s; }
+        input:focus { outline: none; border-color: #667eea; }
+        .btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
+        .btn:active { transform: translateY(0); }
+        .msg { color: #e74c3c; font-size: 13px; margin-top: 10px; text-align: center; min-height: 20px; }
+        .link { text-align: center; margin-top: 20px; }
+        .link a { color: #667eea; text-decoration: none; font-size: 14px; }
+        .link a:hover { text-decoration: underline; }
+        .tip { color: #888; font-size: 12px; margin-top: 16px; text-align: center; line-height: 1.6; }
+        .carousel-dots { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: background 0.3s; }
+        .dot.active { background: #fff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="carousel">
+            <div class="carousel-item active">
+                <img src="/img/login1.jpg" alt="登录背景1" onerror="this.onerror=null; this.src='/img/placeholder.svg';">
+            </div>
+            <div class="carousel-item">
+                <img src="/img/login2.jpg" alt="登录背景2" onerror="this.onerror=null; this.src='/img/placeholder.svg';">
+            </div>
+            <div class="carousel-item">
+                <img src="/img/login3.jpg" alt="登录背景3" onerror="this.onerror=null; this.src='/img/placeholder.svg';">
+            </div>
+            <div class="carousel-dots">
+                <span class="dot active" onclick="loginCarousel.showSlide(0)"></span>
+                <span class="dot" onclick="loginCarousel.showSlide(1)"></span>
+                <span class="dot" onclick="loginCarousel.showSlide(2)"></span>
+            </div>
+        </div>
+        <div class="login-box">
+            <h1>校园零售销售系统</h1>
+            <p class="subtitle">欢迎登录</p>
+            <form action="/login" method="post">
+                <div class="form-group">
+                    <label>学号</label>
+                    <input type="text" name="studentId" placeholder="请输入学号" required>
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" name="password" placeholder="请输入密码" required>
+                </div>
+                <button type="submit" class="btn">登 录</button>
+            </form>
+            <p class="msg" th:if="${msg}" th:text="${msg}"></p>
+            <p class="link">没有账号？<a href="/register">立即注册</a></p>
+            <p class="tip">管理员学号：admin / 123456<br>测试学号：2021001 / 123456</p>
+        </div>
+    </div>
+    <script>
+        // 登录页面轮播功能 - 独立作用域
+        (function() {
+            const loginCarousel = {
+                currentSlide: 0,
+                slides: null,
+                dots: null,
+                intervalId: null,
+                
+                init: function() {
+                    this.slides = document.querySelectorAll('.carousel .carousel-item');
+                    this.dots = document.querySelectorAll('.carousel .dot');
+                    if (this.slides.length > 0) {
+                        this.startAutoPlay();
+                    }
+                },
+                
+                showSlide: function(n) {
+                    if (this.slides && this.slides.length > 0) {
+                        this.slides[this.currentSlide].classList.remove('active');
+                        if (this.dots && this.dots[this.currentSlide]) {
+                            this.dots[this.currentSlide].classList.remove('active');
+                        }
+                        this.currentSlide = n;
+                        this.slides[this.currentSlide].classList.add('active');
+                        if (this.dots && this.dots[this.currentSlide]) {
+                            this.dots[this.currentSlide].classList.add('active');
+                        }
+                    }
+                },
+                
+                startAutoPlay: function() {
+                    const self = this;
+                    this.intervalId = setInterval(function() {
+                        self.currentSlide = (self.currentSlide + 1) % self.slides.length;
+                        self.showSlide(self.currentSlide);
+                    }, 4000);
+                }
+            };
+            
+            // 将 loginCarousel 暴露到全局，供 onclick 使用
+            window.loginCarousel = loginCarousel;
+            
+            // 页面加载完成后初始化
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    loginCarousel.init();
+                });
+            } else {
+                loginCarousel.init();
+            }
+        })();
+    </script>
+</body>
+</html>

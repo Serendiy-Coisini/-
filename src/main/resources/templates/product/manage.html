@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品管理 - 校园零售销售系统</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Microsoft YaHei", sans-serif; background: #f5f5f5; }
+        .head { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; padding: 12px 24px; }
+        .head a { color: #fff; text-decoration: none; margin-right: 16px; }
+        .main { max-width: 960px; margin: 24px auto; padding: 0 20px; }
+        .msg { color: #0a0; margin-bottom: 12px; }
+        table { width: 100%; background: #fff; border-radius: 8px; border-collapse: collapse; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; }
+        a.btn { display: inline-block; padding: 4px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; margin-right: 6px; }
+        .btn-edit { background: #667eea; color: #fff; }
+        .btn-del { background: #e74c3c; color: #fff; }
+        .btn-add { padding: 8px 16px; background: #27ae60; color: #fff; margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+    <div class="head">
+        <a href="/">首页</a>
+        <a href="/product/manage">商品管理</a>
+        <a href="/order/manage">订单管理</a>
+        <a href="/logout">退出</a>
+    </div>
+    <div class="main">
+        <p class="msg" th:if="${msg}" th:text="${msg}"></p>
+        <a href="/product/add" class="btn btn-add">+ 新增商品</a>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>图片</th>
+                <th>名称</th>
+                <th>单价</th>
+                <th>库存</th>
+                <th>分类</th>
+                <th>操作</th>
+            </tr>
+            <tr th:each="p : ${products}">
+                <td th:text="${p.id}">1</td>
+                <td>
+                    <img th:src="${p.imageUrl != null and !p.imageUrl.isEmpty()} ? ${p.imageUrl} : '/img/placeholder.svg'" alt="" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
+                </td>
+                <td th:text="${p.name}">矿泉水</td>
+                <td th:text="'¥' + ${p.price}">0</td>
+                <td th:text="${p.stock}">0</td>
+                <td th:text="${p.category}">-</td>
+                <td>
+                    <a th:href="${'/product/edit/' + p.id}" class="btn btn-edit">编辑</a>
+                    <a th:href="${'/product/delete/' + p.id}" class="btn btn-del" onclick="return confirm('确定删除？');">删除</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

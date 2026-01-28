@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>确认订单 - 校园零售销售系统</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Microsoft YaHei", sans-serif; background: #f5f5f5; }
+        .head { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; padding: 12px 24px; }
+        .head a { color: #fff; text-decoration: none; margin-right: 16px; }
+        .main { max-width: 800px; margin: 24px auto; padding: 0 20px; }
+        .card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .card h3 { margin-bottom: 16px; color: #333; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px 0; border-bottom: 1px solid #eee; text-align: left; }
+        .total { font-weight: bold; font-size: 18px; margin-top: 12px; color: #e74c3c; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 4px; color: #333; font-weight: 500; }
+        .form-group input, .form-group select { width: 100%; max-width: 400px; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #667eea; }
+        .dormitory-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; max-width: 400px; }
+        .dormitory-group select, .dormitory-group input { width: 100%; max-width: none; }
+        .hint { font-size: 12px; color: #999; margin-top: 4px; }
+        .btn-submit { padding: 12px 32px; background: #27ae60; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .btn-submit:hover { background: #229954; }
+        .btn-back { padding: 12px 24px; background: #95a5a6; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; text-decoration: none; display: inline-block; margin-left: 12px; }
+        .msg { color: #c00; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+    <div class="head">
+        <a href="/">首页</a>
+        <a href="/product/list">商品选购</a>
+        <a href="/cart">购物车</a>
+        <a href="/order/my">我的订单</a>
+        <a href="/logout">退出</a>
+    </div>
+    <div class="main">
+        <p class="msg" th:if="${msg}" th:text="${msg}"></p>
+        <div class="card">
+            <h3>订单商品</h3>
+            <table>
+                <tr>
+                    <th>商品</th>
+                    <th>单价</th>
+                    <th>数量</th>
+                    <th>小计</th>
+                </tr>
+                <tr th:each="p : ${products}" th:with="qty=${cart.get(p.id)}">
+                    <td th:text="${p.name}">-</td>
+                    <td th:text="'¥' + ${p.price}">-</td>
+                    <td th:text="${qty}">-</td>
+                    <td th:text="'¥' + ${p.price * qty}">-</td>
+                </tr>
+            </table>
+            <p class="total">订单总金额：¥<span th:text="${total}">0</span></p>
+        </div>
+        <div class="card">
+            <h3>收货信息（请填写）</h3>
+            <form action="/order/submit" method="post">
+                <div class="form-group">
+                    <label>姓名 *</label>
+                    <input type="text" name="receiverName" placeholder="收货人姓名" required>
+                </div>
+                <div class="form-group">
+                    <label>宿舍信息 *</label>
+                    <div class="dormitory-group">
+                        <select name="dormitoryArea" id="dormitoryArea" required>
+                            <option value="">选择区域</option>
+                            <option value="南一区">南一区</option>
+                            <option value="南二区">南二区</option>
+                            <option value="南三区">南三区</option>
+                            <option value="南四区">南四区</option>
+                            <option value="中区">中区</option>
+                        </select>
+                        <select name="dormitoryBuilding" id="dormitoryBuilding" required>
+                            <option value="">选择栋</option>
+                            <option value="A">A栋</option>
+                            <option value="B">B栋</option>
+                            <option value="C">C栋</option>
+                        </select>
+                        <input type="text" name="dormitoryNumber" id="dormitoryNumber" placeholder="宿舍号" pattern="[0-9]+" required>
+                    </div>
+                    <div class="hint">例如：南一区 A栋 301</div>
+                </div>
+                <div class="form-group">
+                    <label>联系电话 *</label>
+                    <input type="text" name="receiverPhone" placeholder="请输入11位手机号" maxlength="11" pattern="[0-9]{11}" required>
+                    <div class="hint">联系电话必须为11位数字</div>
+                </div>
+                <button type="submit" class="btn-submit">确认下单</button>
+                <a href="/cart" class="btn-back">返回购物车</a>
+            </form>
+        </div>
+    </div>
+    <script>
+        // 如果用户已有宿舍信息，自动填充
+        (function() {
+            const userDormitory = /*[[${user.dormitory}]]*/ '';
+            if (userDormitory) {
+                // 解析宿舍信息，格式：南一区A栋301
+                const match = userDormitory.match(/^(南[一二三四]区|中区)([ABC])栋(\d+)$/);
+                if (match) {
+                    document.getElementById('dormitoryArea').value = match[1];
+                    document.getElementById('dormitoryBuilding').value = match[2];
+                    document.getElementById('dormitoryNumber').value = match[3];
+                }
+            }
+        })();
+        
+        // 电话号码输入限制：只能输入数字，最多11位
+        document.querySelector('input[name="receiverPhone"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').slice(0, 11);
+        });
+        
+        // 宿舍号输入限制：只能输入数字
+        document.getElementById('dormitoryNumber').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+        
+        // 表单提交前验证
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const phone = document.querySelector('input[name="receiverPhone"]').value;
+            if (phone.length !== 11) {
+                e.preventDefault();
+                alert('联系电话必须为11位数字');
+                return false;
+            }
+            
+            const dormitoryArea = document.getElementById('dormitoryArea').value;
+            const dormitoryBuilding = document.getElementById('dormitoryBuilding').value;
+            const dormitoryNumber = document.getElementById('dormitoryNumber').value;
+            
+            if (!dormitoryArea || !dormitoryBuilding || !dormitoryNumber) {
+                e.preventDefault();
+                alert('请完整填写宿舍信息');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

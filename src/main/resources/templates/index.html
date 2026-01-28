@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 校园零售销售系统</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Microsoft YaHei", sans-serif; background: #f5f5f5; }
+        .head { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .head a { color: #fff; text-decoration: none; margin-left: 16px; transition: opacity 0.3s; }
+        .head a:hover { opacity: 0.8; }
+        .banner { height: 150px; position: relative; overflow: hidden; margin-bottom: 30px; border-radius: 0 0 20px 20px; background: #c0e4fd; width: 100%; }
+        .banner img { width: 100%; height: 150px; object-fit: contain; object-position: center; display: block; }
+        .main { max-width: 1200px; margin: 0 auto; padding: 0 20px 40px; }
+        .section { margin-bottom: 40px; }
+        .section-title { font-size: 24px; color: #333; margin-bottom: 20px; font-weight: 600; padding-left: 12px; border-left: 4px solid #667eea; }
+        .hot-products { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        .product-img-wrapper { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #f0f0f0; }
+        .product-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .product-info { padding: 14px; }
+        .product-name { font-size: 15px; color: #333; margin-bottom: 8px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .product-price { color: #e74c3c; font-size: 18px; font-weight: bold; }
+        .quick-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .link-card { background: #fff; border-radius: 12px; padding: 24px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: transform 0.3s; }
+        .link-card:hover { transform: translateY(-3px); }
+        .link-card a { color: #667eea; text-decoration: none; font-size: 16px; font-weight: 500; }
+        .link-card a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="head">
+        <span>欢迎，学号 <span th:text="${user.username}">-</span></span>
+        <div>
+            <a href="/">首页</a>
+            <a th:if="${user.role == 'ADMIN'}" href="/product/manage">商品管理</a>
+            <a th:if="${user.role == 'ADMIN'}" href="/order/manage">订单管理</a>
+            <a th:if="${user.role != 'ADMIN'}" href="/product/list">商品选购</a>
+            <a th:if="${user.role != 'ADMIN'}" href="/cart">购物车</a>
+            <a th:if="${user.role != 'ADMIN'}" href="/order/my">我的订单</a>
+            <a href="/logout">退出</a>
+        </div>
+    </div>
+    <div class="banner">
+        <img src="/img/home1.jpg" alt="首页横幅" onerror="this.onerror=null; this.src='/img/placeholder.svg';">
+    </div>
+    <div class="main">
+        <div class="section" th:if="${user.role != 'ADMIN'}">
+            <h2 class="section-title">热门商品</h2>
+            <div class="hot-products">
+                <div class="product-card" th:each="p : ${hotProducts}" onclick="location.href='/product/list'">
+                    <div class="product-img-wrapper">
+                        <img th:src="${p.imageUrl != null and !p.imageUrl.isEmpty()} ? ${p.imageUrl} : '/img/placeholder.svg'" alt="" class="product-img">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name" th:text="${p.name}">商品</div>
+                        <div class="product-price" th:text="'¥' + ${p.price}">0</div>
+                    </div>
+                </div>
+            </div>
+            <p th:if="${#lists.isEmpty(hotProducts)}" style="text-align:center;color:#888;padding:40px">暂无热门商品</p>
+        </div>
+        <div class="section">
+            <h2 class="section-title">功能入口</h2>
+            <div class="quick-links">
+                <div class="link-card" th:if="${user.role != 'ADMIN'}">
+                    <a href="/product/list">商品选购</a>
+                </div>
+                <div class="link-card" th:if="${user.role != 'ADMIN'}">
+                    <a href="/cart">购物车</a>
+                </div>
+                <div class="link-card" th:if="${user.role != 'ADMIN'}">
+                    <a href="/order/my">我的订单</a>
+                </div>
+                <div class="link-card" th:if="${user.role == 'ADMIN'}">
+                    <a href="/product/manage">商品管理</a>
+                </div>
+                <div class="link-card" th:if="${user.role == 'ADMIN'}">
+                    <a href="/order/manage">订单管理</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
